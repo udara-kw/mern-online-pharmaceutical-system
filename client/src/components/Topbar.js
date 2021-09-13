@@ -2,20 +2,14 @@ import React, { useState } from "react";
 import { fade, makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import IconButton from "@material-ui/core/IconButton";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
 import "./styles/Custom.css";
 import logo from "./images/logo.jpg";
-import { Button, Avatar, Typography } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Link, useHistory } from "react-router-dom";
-import BACKEND_URL from "../Config";
-import axios from "axios";
-import Dialog from "@material-ui/core/Dialog";
-
-const jwt = require("jsonwebtoken");
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -311,6 +305,7 @@ export default function Topbar(props) {
                     <Button
                       onClick={() => {
                         sessionStorage.removeItem("userToken");
+                        setLoggedIn(false);
                         window.location = "/";
                       }}
                       className={classes.signIn}

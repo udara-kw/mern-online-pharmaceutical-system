@@ -1,27 +1,9 @@
-import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core";
+import React from "react";
 import Grid from "@material-ui/core/Grid";
 import HeroSection from "./components/HeroSection";
 import "./styles/Home.css";
 
-const useStyles = makeStyles((theme) => ({
-  postJobSection: {
-    minWidth: "100%",
-  },
-  featuredOrganizations: {
-    minWidth: "100%",
-  },
-  rightSubColumn: {
-    [theme.breakpoints.down("sm")]: {
-      minWidth: "fit-content",
-      paddingTop: 24,
-    },
-  },
-}));
-
 function Home(props) {
-  const classes = useStyles();
-
   return (
     <Grid
       item
