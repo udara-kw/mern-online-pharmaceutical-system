@@ -1,0 +1,24 @@
+.App {
+  text-align: center;
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  text-decoration: unset;
+}
+
+.overlay {
+  background-color: rgba(213, 239, 247, 0.705);
+  min-height: 100vh;
+}
+
+.app-bar {
+  background-color: transparent;
+}
+
+.MuiLink-underlineHover:hover{
+  text-decoration: none !important;
+}

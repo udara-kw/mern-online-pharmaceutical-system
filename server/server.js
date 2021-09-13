@@ -11,8 +11,8 @@ const app = express();
 //import routes
 const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
-
-//app.use("/companyImage", express.static("companyImage"));
+const prescriptionRoutes = require("./routes/prescription");
+const filesRoutes = require("./routes/files");
 
 // app middleware
 app.use(bodyParser.json());
@@ -27,6 +27,8 @@ app.use(compression());
 
 // route middleware
 app.use(userRoutes);
+app.use(prescriptionRoutes);
+app.use(filesRoutes);
 app.use("/api", authRoutes);
 
 const PORT = 8000;

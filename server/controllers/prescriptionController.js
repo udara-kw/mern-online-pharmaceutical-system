@@ -1,9 +1,8 @@
-const Users = require("../models/users");
+const Prescription = require("../models/prescription");
 
 const create = (req, res) => {
-  let newUser = new Users(req.body);
-
-  newUser.save((err) => {
+  let newUser = new Prescription(req.body);
+  newUser.save((err, prescriptionData) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -11,12 +10,28 @@ const create = (req, res) => {
     }
     return res.status(200).json({
       success: "User saved successfully",
+      prescriptionId: prescriptionData._id,
+    });
+  });
+};
+
+const getAllByCustomer = (req, res) => {
+  const { customer } = req.body;
+  Prescription.find({ customer }).exec((err, prescriptions) => {
+    if (err) {
+      return res.status(400).json({
+        error: err,
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      existingData: prescriptions,
     });
   });
 };
 
 const getById = async (req, res) => {
-  Users.findById(req.params.id).exec((err, user) => {
+  Prescription.findById(req.params.id).exec((err, user) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -30,7 +45,7 @@ const getById = async (req, res) => {
 };
 
 const update = (req, res) => {
-  Users.findByIdAndUpdate(
+  Prescription.findByIdAndUpdate(
     req.params.id,
     {
       $set: req.body,
@@ -42,14 +57,14 @@ const update = (req, res) => {
         });
       }
       return res.status(200).json({
-        sucess: "Updated successfully",
+        success: true,
       });
     }
   );
 };
 
 const remove = (req, res) => {
-  Users.findByIdAndDelete(req.params.id).exec((err, deletedUser) => {
+  Prescription.findByIdAndDelete(req.params.id).exec((err, deletedUser) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -64,6 +79,7 @@ const remove = (req, res) => {
 
 module.exports = {
   create,
+  getAllByCustomer,
   getById,
   update,
   remove,

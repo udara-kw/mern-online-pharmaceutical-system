@@ -9,7 +9,16 @@ const emailRegexp =
 
 // User signup
 exports.signup = (req, res, next) => {
-  let { name, email, password, password_confirmation } = req.body;
+  let {
+    name,
+    email,
+    mobile,
+    dob,
+    address,
+    password,
+    password_confirmation,
+    dateRegistered,
+  } = req.body;
   let errors = [];
 
   // Validate inputs
@@ -51,9 +60,13 @@ exports.signup = (req, res, next) => {
       // Create new user
       else {
         const user = new User({
-          username: name,
+          fullName: name,
           email: email,
+          mobile: mobile,
+          dob: dob,
+          address: address,
           password: password,
+          dateRegistered: dateRegistered,
         });
 
         // Hash password
@@ -68,8 +81,9 @@ exports.signup = (req, res, next) => {
               .then((response) => {
                 let access_token = createJWT(
                   response._id,
-                  user.username,
+                  user.fullName,
                   user.email,
+                  user.address,
                   3600
                 );
 
@@ -135,8 +149,9 @@ exports.signin = (req, res) => {
             // Create an access token
             let access_token = createJWT(
               user._id,
-              user.username,
+              user.fullName,
               user.email,
+              user.address,
               3600
             );
             jwt.verify(
