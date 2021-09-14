@@ -158,9 +158,9 @@ export default function CustomizedTables() {
       10
     );
     if (diffDays > 1) {
-      return true;
-    } else {
       return false;
+    } else {
+      return true;
     }
   };
 
@@ -211,7 +211,7 @@ export default function CustomizedTables() {
                   className={classes.button}
                   onClick={() => deletePrescription(row._id, row.dateSubmitted)}
                   endIcon={<DeleteIcon />}
-                  disabled={checkDeletable(row.dateSubmitted)}
+                  disabled={!checkDeletable(row.dateSubmitted)}
                 >
                   Delete
                 </Button>

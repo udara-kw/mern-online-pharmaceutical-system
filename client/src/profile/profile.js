@@ -5,6 +5,11 @@ import {
   Typography,
   TextField,
   Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
 } from "@material-ui/core";
 import { useForm } from "react-hooks-helper";
 import Card from "@material-ui/core/Card";
@@ -13,6 +18,8 @@ import "./styles/Profile.css";
 import Lottie from "react-lottie";
 import HeroImage from "../components/lotties/heroimage";
 import Loading from "../components/Loading";
+import ProfileEdit from "./ProfileEdit";
+import SnackBarAlert from "../components/SnackBarAlert";
 import axios from "axios";
 import BACKEND_URL from "../Config";
 const jwt = require("jsonwebtoken");
@@ -54,6 +61,18 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
+  deleteButton: {
+    backgroundColor: theme.palette.red,
+    color: "white",
+    margin: 10,
+    borderRadius: 25,
+    paddingLeft: 20,
+    paddingRight: 20,
+    "&:hover": {
+      backgroundColor: theme.palette.redHover,
+      color: "white",
+    },
+  },
   lottie: {
     height: 200,
     [theme.breakpoints.down("xs")]: {
@@ -72,36 +91,19 @@ const useStyles = makeStyles((theme) => ({
       paddingTop: 24,
     },
   },
+  marginContent: {
+    padding: "2em",
+  },
+  deleteForm: {
+    marginTop: "2.5em",
+  },
+  dialogbuttons: {
+    color: "red",
+  },
 }));
 
 function Orders(props) {
   const classes = useStyles();
-  const token = sessionStorage.getItem("userToken");
-  const userData = jwt.decode(token, { complete: true }).payload;
-
-  const [userDetails, setUserDetails] = useState();
-
-  const getUserDetails = async () => {
-    await axios.get(`${BACKEND_URL}/users/${userData.userId}`).then((res) => {
-      if (res.data.success) {
-        setUserDetails(res.data.user);
-      }
-    });
-  };
-
-  useEffect(() => {
-    getUserDetails();
-  }, []);
-
-  const defaultData = {
-    name: userDetails?.fullName,
-    email: "",
-    street: "",
-    city: "",
-    district: "",
-    mobile: "",
-    dob: "2000-01-01",
-  };
   const defaultOptions = {
     loop: true,
     autoplay: true,
@@ -110,121 +112,179 @@ function Orders(props) {
       preserveAspectRatio: "xMidYMid slice",
     },
   };
-  const [formData, setForm] = useForm(defaultData);
-  const updateProfile = (e) => {
-    e.preventDefault();
+  // Alert stuff
+  const [alertShow, setAlertShow] = useState(false);
+  const [alertData, setAlertData] = useState({ severity: "", msg: "" });
+  const displayAlert = () => {
+    return (
+      <SnackBarAlert
+        open={alertShow}
+        onClose={handleAlertClose}
+        severity={alertData.severity}
+        msg={alertData.msg}
+      />
+    );
+  };
+  const handleAlert = () => {
+    setAlertShow(true);
+  };
+  const handleAlertClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setAlertShow(false);
   };
 
-  const ProfileEdit = () => {
-    if (userDetails) {
-      return (
-        <form className={classes.form} onSubmit={updateProfile}>
-          <Grid container>
-            <Grid item md={12}>
-              <TextField
-                required
-                name="fullname"
-                onChange={setForm}
-                value={formData.fullname}
-                label="Full Name"
-                type="fullname"
-                className={classes.textField}
-                fullWidth
-              />{" "}
-            </Grid>{" "}
-          </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              <TextField
-                required
-                name="email"
-                onChange={setForm}
-                value={formData.email}
-                label="Email"
-                type="email"
-                autoComplete="current-password"
-                className={classes.textField}
-                fullWidth
-              />{" "}
-            </Grid>{" "}
-          </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              <TextField
-                required
-                name="mobile"
-                onChange={setForm}
-                value={formData.mobile}
-                label="Mobile Number"
-                type="mobile"
-                className={classes.textField}
-                fullWidth
-              />
-            </Grid>
-            <Grid item md={12}>
-              <TextField
-                name="dob"
-                onChange={setForm}
-                value={formData.dob}
-                label="Date of Birth"
-                type="date"
-                className={classes.textField}
-                required
-                fullWidth
-              />
-            </Grid>
-          </Grid>
-          <Grid container>
-            <Grid item md={12}>
-              <TextField
-                required
-                name="street"
-                onChange={setForm}
-                value={formData.street}
-                label="Street"
-                type="street"
-                className={classes.textField}
-                fullWidth
-              />
-            </Grid>
-            <Grid item md={12}>
-              <TextField
-                required
-                name="city"
-                onChange={setForm}
-                value={formData.city}
-                label="City"
-                type="city"
-                className={classes.textField}
-                fullWidth
-              />
-            </Grid>
-            <Grid item md={12}>
-              <TextField
-                required
-                name="district"
-                onChange={setForm}
-                value={formData.district}
-                label="District"
-                type="district"
-                className={classes.textField}
-                fullWidth
-              />
-            </Grid>
-          </Grid>
+  const token = sessionStorage.getItem("userToken");
+  const userData = jwt.decode(token, { complete: true }).payload;
 
-          <Button type="submit" fullWidth className={classes.submit}>
-            Submit
-          </Button>
-        </form>
-      );
+  const [userDetails, setUserDetails] = useState();
+  const getUserDetails = async () => {
+    await axios.get(`${BACKEND_URL}/users/${userData.userId}`).then((res) => {
+      if (res.data.success) {
+        setUserDetails(res.data.user);
+      }
+    });
+  };
+  useEffect(() => {
+    getUserDetails();
+  }, []);
+
+  const passwordChangeFormDefault = {
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  };
+  const [passwordChangeFormData, setPasswordChangeForm] = useForm(
+    passwordChangeFormDefault
+  );
+  const checkValidPassword = (e) => {
+    e.preventDefault();
+    axios
+      .post(`${BACKEND_URL}/api/check-password`, {
+        userId: userData.userId,
+        password: passwordChangeFormData.currentPassword,
+      })
+      .then((res) => {
+        if (res.data.success) {
+          changePassword();
+        } else {
+          setAlertData({
+            severity: "error",
+            msg: "Wrong password!",
+          });
+          handleAlert();
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setAlertData({
+            severity: "error",
+            msg: "Error!",
+          });
+          handleAlert();
+        }
+      });
+  };
+  const changePassword = async () => {
+    if (
+      passwordChangeFormData.newPassword ===
+      passwordChangeFormData.confirmPassword
+    ) {
+      axios
+        .post(`${BACKEND_URL}/api/change-password/`, {
+          userId: userData.userId,
+          newPassword: passwordChangeFormData.newPassword,
+        })
+        .then((res) => {
+          if (res.data.success) {
+            setAlertData({
+              severity: "success",
+              msg: "Password Changed!",
+            });
+            handleAlert();
+          }
+        })
+        .catch((err) => {
+          if (err) {
+            setAlertData({
+              severity: "error",
+              msg: "Server Error!",
+            });
+            handleAlert();
+          }
+        });
     } else {
-      return <Loading />;
+      setAlertData({
+        severity: "error",
+        msg: "Passwords do not match each other!",
+      });
+      handleAlert();
     }
+  };
+
+  // Dialog Box Stuff
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const [deletePassword, setDeletePassword] = useState("");
+  const deleteAccount = (e) => {
+    e.preventDefault();
+    axios
+      .post(`${BACKEND_URL}/api/check-password`, {
+        userId: userData.userId,
+        password: deletePassword,
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setOpen(true);
+        } else {
+          setAlertData({
+            severity: "error",
+            msg: "Wrong password!",
+          });
+          handleAlert();
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setAlertData({
+            severity: "error",
+            msg: "Error!",
+          });
+          handleAlert();
+        }
+      });
+  };
+  const confirmDeletion = () => {
+    axios
+      .delete(`${BACKEND_URL}/users/delete/${userData.userId}`)
+      .then((res) => {
+        if (res.data.success) {
+          sessionStorage.removeItem("userToken");
+          window.location = "/";
+          setAlertData({
+            severity: "success",
+            msg: "Deleted!",
+          });
+          handleAlert();
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          setAlertData({
+            severity: "error",
+            msg: "Faled to Delete!",
+          });
+          handleAlert();
+        }
+      });
   };
   return (
     <Grid item container xs={12} spacing={3} direction="column">
-      {console.log(userDetails)}
+      {displayAlert()}
       <Grid item container xs={12}>
         <Card className={classes.root}>
           <CardContent className={classes.content}>
@@ -233,6 +293,7 @@ function Orders(props) {
               direction="row"
               spacing={3}
               style={{ maxWidth: "100%" }}
+              className={classes.marginContent}
             >
               <Grid item xs={6}>
                 <Lottie
@@ -244,13 +305,127 @@ function Orders(props) {
               </Grid>
               <Grid item xs={6}>
                 <Grid item xs={12}>
-                  <Typography variant="h5">Edit Profile</Typography>
+                  <Typography variant="h5" style={{ marginTop: "1em" }}>
+                    Edit Profile
+                  </Typography>
                 </Grid>
-                <ProfileEdit />
+                {userDetails ? <ProfileEdit info={userDetails} /> : <Loading />}
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h5" style={{ marginTop: "1em" }}>
+                  Change Password
+                </Typography>
+                <form onSubmit={checkValidPassword}>
+                  <Grid container>
+                    <Grid item md={12}>
+                      <TextField
+                        required
+                        name="currentPassword"
+                        onChange={setPasswordChangeForm}
+                        value={passwordChangeFormData.currentPassword}
+                        label="Current Password"
+                        type="password"
+                        className={classes.textField}
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item md={6}>
+                      <TextField
+                        name="newPassword"
+                        onChange={setPasswordChangeForm}
+                        value={passwordChangeFormData.newPassword}
+                        label="New Password"
+                        type="password"
+                        className={classes.textField}
+                        required
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item md={6}>
+                      <TextField
+                        name="confirmPassword"
+                        onChange={setPasswordChangeForm}
+                        value={passwordChangeFormData.confirmPassword}
+                        label="Confirm New password"
+                        type="password"
+                        className={classes.textField}
+                        required
+                        fullWidth
+                      />
+                    </Grid>
+                    <Grid item md={12}>
+                      <Button type="submit" className={classes.button}>
+                        Change Password
+                      </Button>
+                    </Grid>
+                  </Grid>
+                </form>
+              </Grid>
+              <Grid item xs={6}>
+                <Grid item xs={12}>
+                  <Typography variant="h5" style={{ marginTop: "1em" }}>
+                    Delete Account
+                  </Typography>
+                  <form onSubmit={deleteAccount} className={classes.deleteForm}>
+                    <Grid container>
+                      <Grid item md={12}>
+                        <Typography>
+                          In order to delete your account, you must first
+                          provide your current password
+                        </Typography>
+                      </Grid>
+                      <Grid item md={12}>
+                        <TextField
+                          required
+                          name="deletePassword"
+                          onChange={(e) => setDeletePassword(e.target.value)}
+                          value={deletePassword}
+                          label="Current Password"
+                          type="password"
+                          className={classes.textField}
+                          fullWidth
+                        />
+                      </Grid>
+                      <Grid item md={12}>
+                        <Button type="submit" className={classes.deleteButton}>
+                          Delete Account
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </form>
+                </Grid>
               </Grid>
             </Grid>
           </CardContent>
         </Card>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="edit-details-form"
+          fullWidth
+          className={classes.dialogBox}
+        >
+          <DialogTitle id="edit-details-form">Are you sure?</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              You are going to permanently delete your account. Please confirm
+              to delete your account.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              onClick={confirmDeletion}
+              color="primary"
+              className={classes.dialogbuttons}
+            >
+              Confirm and Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Grid>
     </Grid>
   );

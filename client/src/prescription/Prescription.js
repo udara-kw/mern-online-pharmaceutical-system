@@ -22,6 +22,7 @@ import BACKEND_URL from "../Config";
 const jwt = require("jsonwebtoken");
 const path = require("path");
 
+// Custom styling
 const useStyles = makeStyles((theme) => ({
   root: {
     minWidth: "100%",
@@ -39,15 +40,6 @@ const useStyles = makeStyles((theme) => ({
     alignSelf: "center",
     marginTop: "1em",
   },
-  h2: {
-    fontWeight: "bolder",
-    color: theme.palette.stateBlue,
-    marginBottom: 20,
-  },
-  h4: {
-    color: theme.palette.black,
-    marginBottom: 20,
-  },
   button: {
     backgroundColor: theme.palette.blueJeans,
     color: "white",
@@ -58,24 +50,6 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: theme.palette.blueJeansHover,
       color: "white",
-    },
-  },
-  lottie: {
-    height: 200,
-    [theme.breakpoints.down("xs")]: {
-      width: 300,
-    },
-  },
-  postJobSection: {
-    minWidth: "100%",
-  },
-  featuredOrganizations: {
-    minWidth: "100%",
-  },
-  rightSubColumn: {
-    [theme.breakpoints.down("sm")]: {
-      minWidth: "fit-content",
-      paddingTop: 24,
     },
   },
 }));
@@ -106,9 +80,12 @@ function Prescription(props) {
     setAlertShow(false);
   };
 
+  // Get user token saved in session storage
   const token = sessionStorage.getItem("userToken");
+  // Decrypt token back
   const userData = jwt.decode(token, { complete: true }).payload;
 
+  // Default data for text fields in form
   var prescriptionDefaultData = {
     fullName: userData.fullName,
     email: userData.email,
@@ -117,6 +94,8 @@ function Prescription(props) {
     district: userData.address.district,
     note: "",
   };
+
+  // State management for form text fields
   const [prescriptionData, setPrescriptionData] = useForm(
     prescriptionDefaultData
   );
@@ -127,8 +106,12 @@ function Prescription(props) {
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
   };
+
+  // Create prescription document in mongo
   const uploadPrescription = (e) => {
     e.preventDefault();
+
+    // Set data as model suggests
     const uploadData = {
       fullName: prescriptionData.fullName,
       email: prescriptionData.email,
@@ -138,18 +121,23 @@ function Prescription(props) {
         district: prescriptionData.district,
       },
       note: prescriptionData.note,
+      status: "pending",
       customer: userData.userId,
       dateSubmitted: new Date(),
     };
+
+    // Send data to backend
     axios
       .post(`${BACKEND_URL}/prescription/create`, uploadData)
       .then((res) => {
         if (res.data.success) {
+          // If successful
           handleUploads(res.data.prescriptionId);
         }
       })
       .catch((err) => {
         if (err) {
+          // If error occurs
           setAlertData({
             severity: "error",
             msg: "Failed to submit prescription!",
@@ -159,11 +147,15 @@ function Prescription(props) {
       });
   };
 
+  // Upload prescription to server
   const handleUploads = (prescriptionId) => {
+    // Set Form Data
     const data = new FormData();
     const image = selectedFile;
     data.append("prescriptionName", prescriptionId);
     data.append("prescriptionFile", image);
+
+    // Send File
     axios
       .post(`${BACKEND_URL}/file`, data, {
         headers: {
@@ -191,6 +183,8 @@ function Prescription(props) {
         }
       });
   };
+
+  // Update saved file name in db
   const updateFileName = (prescriptionId) => {
     const updateData = {
       prescriptionFileName: prescriptionId + path.extname(selectedFile.name),
@@ -216,6 +210,7 @@ function Prescription(props) {
         }
       });
   };
+
   return (
     <Grid
       item

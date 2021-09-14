@@ -30,7 +30,6 @@ const uploadPrescriptionToServer = (req, res) => {
       success: true,
     });
   });
-  // console.log(req.file);
 };
 
 const downloadPrescription = async (req, res) => {

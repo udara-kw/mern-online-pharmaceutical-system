@@ -63,17 +63,19 @@ const update = (req, res) => {
 };
 
 const remove = (req, res) => {
-  Prescription.findByIdAndDelete(req.params.id).exec((err, deletedUser) => {
-    if (err) {
-      return res.status(400).json({
-        error: err,
+  Prescription.findByIdAndDelete(req.params.id).exec(
+    (err, deletedPrescription) => {
+      if (err) {
+        return res.status(400).json({
+          error: err,
+        });
+      }
+      return res.status(200).json({
+        success: "Prescription deleted successfully",
+        deletedPrescription,
       });
     }
-    return res.status(200).json({
-      success: "User deleted successfully",
-      deletedUser,
-    });
-  });
+  );
 };
 
 module.exports = {
