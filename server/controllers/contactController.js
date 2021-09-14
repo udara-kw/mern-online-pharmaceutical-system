@@ -1,22 +1,21 @@
-const Prescription = require("../models/prescription");
+const Contact = require("../models/contact");
 
 const create = (req, res) => {
-  let newPrescription = new Prescription(req.body);
-  newPrescription.save((err, prescriptionData) => {
+  let newContact = new Contact(req.body);
+  newContact.save((err) => {
     if (err) {
       return res.status(400).json({
         error: err,
       });
     }
     return res.status(200).json({
-      success: true,
-      prescriptionId: prescriptionData._id,
+      success: "Message saved successfully",
     });
   });
 };
 
-const getAllByCustomer = (req, res) => {
-  Prescription.find({ customer: req.params.id }, (err, prescriptions) => {
+const getAll = (req, res) => {
+  Contact.find().exec((err, contact) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -24,13 +23,13 @@ const getAllByCustomer = (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      existingData: prescriptions,
+      existingData: contact,
     });
   });
 };
 
-const getById = async (req, res) => {
-  Prescription.findById(req.params.id).exec((err, user) => {
+const getById = (req, res) => {
+  Contact.findById(req.params.id).exec((err, contact) => {
     if (err) {
       return res.status(400).json({
         error: err,
@@ -38,47 +37,47 @@ const getById = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      user: user,
+      contact: contact,
     });
   });
 };
 
 const update = (req, res) => {
-  Prescription.findByIdAndUpdate(
+  Contact.findByIdAndUpdate(
     req.params.id,
     {
       $set: req.body,
     },
-    (err, user) => {
+    (err, contact) => {
       if (err) {
         return res.status(400).json({
           error: err,
         });
       }
       return res.status(200).json({
-        success: true,
+        success: "Updated successfully",
       });
     }
   );
 };
 
 const remove = (req, res) => {
-  Prescription.findByIdAndDelete(req.params.id).exec((err, deletedUser) => {
+  Contact.deleteMany(req.body).exec((err, deletedContact) => {
     if (err) {
       return res.status(400).json({
         error: err,
       });
     }
     return res.status(200).json({
-      success: "User deleted successfully",
-      deletedUser,
+      success: "Contact deleted successfully",
+      deletedContact: deletedContact,
     });
   });
 };
 
 module.exports = {
   create,
-  getAllByCustomer,
+  getAll,
   getById,
   update,
   remove,

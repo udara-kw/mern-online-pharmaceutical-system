@@ -193,7 +193,7 @@ function Prescription(props) {
   };
   const updateFileName = (prescriptionId) => {
     const updateData = {
-      prescriptionFileName: userData.userId + path.extname(selectedFile.name),
+      prescriptionFileName: prescriptionId + path.extname(selectedFile.name),
     };
     axios
       .put(`${BACKEND_URL}/prescription/update/${prescriptionId}`, updateData)

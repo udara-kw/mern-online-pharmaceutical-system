@@ -12,6 +12,8 @@ import Topbar from "./components/Topbar";
 import ContactUs from "./contact/ContactUs";
 import Home from "./home/Home";
 import Dashboard from "./home/Dashboard";
+import Orders from "./Orders/Orders";
+import Profile from "./profile/profile";
 import Prescription from "./prescription/Prescription";
 import backgroundImage from "./images/background-image.jpg";
 import SignInSide from "./signIn/components/SignInSide";
@@ -98,7 +100,7 @@ function Base() {
         <Route path="/login" exact>
           <SignInSide />
         </Route>
-        <Route path="/contactUs" exact>
+        <Route path="/contact" exact>
           <ContactUs />
         </Route>
       </>
@@ -115,9 +117,12 @@ function Base() {
           <Prescription />
         </Route>
         <Route path="/orders" exact>
-          <SignInSide />
+          <Orders />
         </Route>
         <Route path="/profile" exact>
+          <Profile />
+        </Route>
+        <Route path="/contact" exact>
           <ContactUs />
         </Route>
       </>

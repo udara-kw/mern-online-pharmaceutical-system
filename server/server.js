@@ -1,4 +1,3 @@
-
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -13,13 +12,14 @@ const userRoutes = require("./routes/users");
 const authRoutes = require("./routes/auth");
 const prescriptionRoutes = require("./routes/prescription");
 const filesRoutes = require("./routes/files");
+const contactRoutes = require("./routes/contact");
 
 // app middleware
 app.use(bodyParser.json());
 app.use(helmet());
 app.use(
   helmet.frameguard({
-    action: "deny"
+    action: "deny",
   })
 );
 app.use(cors());
@@ -30,6 +30,7 @@ app.use(userRoutes);
 app.use(prescriptionRoutes);
 app.use(filesRoutes);
 app.use("/api", authRoutes);
+app.use(contactRoutes);
 
 const PORT = 8000;
 

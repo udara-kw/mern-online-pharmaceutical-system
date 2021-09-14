@@ -10,7 +10,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import HomeRoundedIcon from "@material-ui/icons/DirectionsRun";
 import WorkRoundedIcon from "@material-ui/icons/Favorite";
 import BusinessRoundedIcon from "@material-ui/icons/Category";
-import StoreIcon from '@material-ui/icons/Store';
+import StoreIcon from "@material-ui/icons/Store";
+import ContactSupportIcon from "@material-ui/icons/ContactSupport";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,13 +65,6 @@ function NavMenu(props) {
   const history = useHistory();
   if (window.location.pathname === "/") {
     loadingPage = "home";
-  } else if (
-    loadingPath.length > 2 &&
-    (loadingPath[1] === "admin" ||
-      loadingPath[1] === "jobseeker" ||
-      loadingPath[1] === "employer")
-  ) {
-    loadingPage = loadingPath[2];
   } else {
     loadingPage = loadingPath[1];
   }
@@ -80,13 +74,6 @@ function NavMenu(props) {
       const path = location.pathname.split("/");
       if (location.pathname === "/") {
         setDefaultPage("home");
-      } else if (
-        path.length > 2 &&
-        (loadingPath[1] === "admin" ||
-          loadingPath[1] === "jobseeker" ||
-          loadingPath[1] === "employer")
-      ) {
-        setDefaultPage(path[2]);
       } else {
         setDefaultPage(path[1]);
       }
@@ -166,9 +153,24 @@ function NavMenu(props) {
               />
             </ListItem>
           </Link>
+          <Link to="/contact" className={classes.spaced}>
+            <ListItem
+              button
+              key="Contact"
+              selected={selectedIndex === "contact"}
+              onClick={(event) => handleListItemClick(event, "contact")}
+              classes={{ selected: classes.active }}
+              className={classes.listItem}
+            >
+              <ListItemIcon className={classes.linkIcon}>
+                <BusinessRoundedIcon />
+              </ListItemIcon>
+              <ListItemText className={classes.linkText} primary="Contact Us" />
+            </ListItem>
+          </Link>
         </>
       );
-    }else{
+    } else {
       return (
         <>
           <Link to="/" className={classes.spaced}>
@@ -234,10 +236,22 @@ function NavMenu(props) {
               <ListItemIcon className={classes.linkIcon}>
                 <StoreIcon />
               </ListItemIcon>
-              <ListItemText
-                className={classes.linkText}
-                primary="Orders"
-              />
+              <ListItemText className={classes.linkText} primary="Orders" />
+            </ListItem>
+          </Link>
+          <Link to="/contact" className={classes.spaced}>
+            <ListItem
+              button
+              key="Contact"
+              selected={selectedIndex === "contact"}
+              onClick={(event) => handleListItemClick(event, "contact")}
+              classes={{ selected: classes.active }}
+              className={classes.listItem}
+            >
+              <ListItemIcon className={classes.linkIcon}>
+                <BusinessRoundedIcon />
+              </ListItemIcon>
+              <ListItemText className={classes.linkText} primary="Contact Us" />
             </ListItem>
           </Link>
         </>

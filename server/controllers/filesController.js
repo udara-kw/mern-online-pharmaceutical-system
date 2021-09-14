@@ -45,7 +45,10 @@ const downloadPrescription = async (req, res) => {
     var file = fs.createReadStream(prescriptionPath);
     file.pipe(res);
   } catch (error) {
-    // console.log(error);
+    return res.status(400).json({
+      success: false,
+      error: err,
+    });
   }
 };
 

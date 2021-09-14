@@ -11,7 +11,7 @@ function App() {
       <BrowserRouter>
         <ScrollToTop />
         <ThemeProvider theme={theme}>
-          <Route path="(/|/login|/prescription|/contactUs)">
+          <Route path="(/|/login|/prescription|/orders|/profile|/contact)">
             <Base />
           </Route>
         </ThemeProvider>

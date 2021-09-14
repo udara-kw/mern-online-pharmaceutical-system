@@ -4,9 +4,10 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import InputBase from "@material-ui/core/InputBase";
 import SearchIcon from "@material-ui/icons/Search";
+import AccountBoxIcon from '@material-ui/icons/AccountCircle';
 import "./styles/Custom.css";
 import logo from "./images/logo.jpg";
-import { Button } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import { Link, useHistory } from "react-router-dom";
@@ -133,19 +134,7 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
   },
-  getHired: {
-    backgroundColor: theme.palette.pinkyRed,
-    color: theme.palette.white,
-    marginLeft: 20,
-    borderRadius: 25,
-    paddingLeft: 20,
-    paddingRight: 20,
-    "&:hover": {
-      backgroundColor: theme.palette.mediumTurquoise,
-      color: "white",
-    },
-  },
-  startHiring: {
+  primaryButton: {
     height: 40,
     backgroundColor: theme.palette.tuftsBlue,
     color: theme.palette.white,
@@ -159,19 +148,6 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   menu: { marginTop: 50 },
-  mobileMenu: {
-    marginTop: 60,
-
-    "& .MuiMenu-paper": {
-      minWidth: "70%",
-      padding: 16,
-      borderRadius: 12,
-      boxShadow: "rgba(83, 144, 217, 0.6) 0px 4px 12px",
-      [theme.breakpoints.up("xs")]: {
-        minWidth: "unset",
-      },
-    },
-  },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff",
@@ -297,8 +273,13 @@ export default function Topbar(props) {
               <div className={classes.sectionDesktop}>
                 {loggedIn ? (
                   <div>
+                    <Link to="/profile">
+                      <IconButton className={classes.primaryButton}>
+                        <AccountBoxIcon />
+                      </IconButton>
+                    </Link>
                     <Link to="/prescription">
-                      <Button className={classes.startHiring}>
+                      <Button className={classes.primaryButton}>
                         Upload Your Prescription
                       </Button>
                     </Link>

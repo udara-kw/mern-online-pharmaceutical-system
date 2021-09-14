@@ -196,7 +196,7 @@ function ContactUs() {
                   <Grid item xs={12} lg={6}>
                     <Chip
                       icon={<MailRoundedIcon />}
-                      label="info@flamingo.jobs"
+                      label="info@pharmacy.com"
                       className={classes.chip}
                     />
                   </Grid>
